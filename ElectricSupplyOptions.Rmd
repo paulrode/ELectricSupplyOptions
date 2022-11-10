@@ -31,8 +31,17 @@ options(dplyr.summarise.inform = FALSE)  # Suppress text in Knit printout.
 
 nyiso <- read_csv("data/OASIS_Day-Ahead_Market_Zonal_LBMP (1).csv")
 nyiso$`Eastern Date Hour` <- ymd_hms(nyiso$`Eastern Date Hour`)
-"Consumption520" <- read_excel("data/520 Madison.xlsx",skip = 1, col_names = TRUE, na = "NA")
 
+"Comp520" <- read_excel("data/520 Madison.xlsx",skip = 1, col_types = c("date", "numeric","numeric","numeric","numeric","numeric","numeric","numeric","numeric" ) , col_names = c("TimeStamp", "A", "B", "C", "D", "E", "F", "G", "H"), na = "NA") %>% 
+  mutate("Building" = "520 Madison Avenue", .before=1) %>%  
+  mutate("Elect" = A + B + C + D + E + F + G + H, .keep = "unused") -> Comp520
+
+Comp520 %>% 
+  group_by(hour(TimeStamp)) %>% 
+  summarise( "Elect" = sum(Elect))
+           
+    
+```
 
 ################ UP TO HERE 
 
