@@ -37,9 +37,18 @@ nyiso$`Eastern Date Hour` <- ymd_hms(nyiso$`Eastern Date Hour`)
   mutate("Elect" = A + B + C + D + E + F + G + H, .keep = "unused") -> Comp520
 
 Comp520 %>% 
-  group_by(hour(TimeStamp)) %>% 
-  summarise( "Elect" = sum(Elect))
+  filter(minute(TimeStamp) == 0 & second(TimeStamp) ==0) %>% 
+  select(TimeStamp) -> Comp520b
+
+
+Comp520 %>% 
+  group_by(year(TimeStamp), month(TimeStamp),day(TimeStamp), hour(TimeStamp)) %>% 
+  summarise( "Elect" = sum(Elect)) -> Comp520v 
            
+  
+
+  
+  
     
 ```
 
