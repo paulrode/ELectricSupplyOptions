@@ -29,17 +29,24 @@ options(dplyr.summarise.inform = FALSE)  # Suppress text in Knit printout.
 
 # Read in data
 
-data_files <- list.files("NYSISO_data") # Identify file names
-for(i in 1:length(data_files)) {        # Head of for-loop
-  assign(paste0("ISO_Data", i),    # Read and store data frames
-         read_csv(paste0("NYSISO_data/",
-                   data_files[i]), col_names = TRUE, col_types = NULL))}
-###### Up to here 
+do.call(rbind, lapply(list.files(pattern = ".csv"), read_csv)) -> NYSISO_data
+NYSISO_data$`Eastern Date Hour` <- ymd_hms(NYSISO_data$`Eastern Date Hour`)
+
+NYSISO_data %>% 
+  ggplot(aes(x = `Eastern Date Hour`, y = `DAM Zonal LBMP`)) +
+  geom_line()
+
+NYSISO_data %>% 
+group_by(year(`Eastern Date Hour`), month(`Eastern Date Hour`)) %>% 
+  summarise("LBMP_avr" = mean(`DAM Zonal LBMP`)) %>% 
+  ggplot(aes(x = month(`Eastern Date Hour`), y = LBMP_avr)) +
+  geom_line()
+
+
+```
 
 
 
-nyiso <- read_csv("data/OASIS_Day-Ahead_Market_Zonal_LBMP.csv")
-nyiso$`Eastern Date Hour` <- ymd_hms(nyiso$`Eastern Date Hour`)
 
 "Comp520" <- read_excel("data/520 Madison.xlsx",skip = 1, col_types = c("date", "numeric","numeric","numeric","numeric","numeric","numeric","numeric","numeric" ) , col_names = c("TimeStamp", "A", "B", "C", "D", "E", "F", "G", "H"), na = "NA") %>% 
   mutate("Building" = "520 Madison Avenue", .before=1) %>%  
