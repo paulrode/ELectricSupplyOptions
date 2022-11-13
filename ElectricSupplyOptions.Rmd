@@ -19,6 +19,7 @@ place <- "Home"  #Where are we working today.
 if (place == "Home"){setwd("C:/Users/paulr/Documents/R/ElectricSupplyOptions")} else {setwd("C:/Users/prode/Documents/R/ElectricSupplyOptions")}
 
 if (!file.exists("data")) { dir.create("data")}
+if (!file.exists("NYSISO_data")) { dir.create("NYSISO_data")}
 
 rm(place, my_packages ) #Clean up
 
@@ -28,8 +29,16 @@ options(dplyr.summarise.inform = FALSE)  # Suppress text in Knit printout.
 
 # Read in data
 
+data_files <- list.files("NYSISO_data") # Identify file names
+for(i in 1:length(data_files)) {        # Head of for-loop
+  assign(paste0("ISO_Data", i),    # Read and store data frames
+         read_csv(paste0("NYSISO_data/",
+                   data_files[i]), col_names = TRUE, col_types = NULL))}
+###### Up to here 
 
-nyiso <- read_csv("data/OASIS_Day-Ahead_Market_Zonal_LBMP (1).csv")
+
+
+nyiso <- read_csv("data/OASIS_Day-Ahead_Market_Zonal_LBMP.csv")
 nyiso$`Eastern Date Hour` <- ymd_hms(nyiso$`Eastern Date Hour`)
 
 "Comp520" <- read_excel("data/520 Madison.xlsx",skip = 1, col_types = c("date", "numeric","numeric","numeric","numeric","numeric","numeric","numeric","numeric" ) , col_names = c("TimeStamp", "A", "B", "C", "D", "E", "F", "G", "H"), na = "NA") %>% 
