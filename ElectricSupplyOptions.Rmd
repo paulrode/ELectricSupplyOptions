@@ -32,18 +32,54 @@ options(dplyr.summarise.inform = FALSE)  # Suppress text in Knit printout.
 do.call(rbind, lapply(list.files(pattern = ".csv"), read_csv)) -> NYSISO_data
 NYSISO_data$`Eastern Date Hour` <- ymd_hms(NYSISO_data$`Eastern Date Hour`)
 
-NYSISO_data %>% 
-  ggplot(aes(x = `Eastern Date Hour`, y = `DAM Zonal LBMP`)) +
-  geom_line()
+
+
+# Plot data 
 
 NYSISO_data %>% 
-group_by(year(`Eastern Date Hour`), month(`Eastern Date Hour`)) %>% 
-  summarise("LBMP_avr" = mean(`DAM Zonal LBMP`)) %>% 
-  ggplot(aes(x = month(`Eastern Date Hour`), y = LBMP_avr)) +
-  geom_line()
+  ggplot(aes(x = `Eastern Date Hour`, y = `DAM Zonal LBMP`)) +
+  geom_line() +
+  stat_smooth(method = "lm", formula = y ~ x, show.legend = TRUE, inherit.aes = TRUE, )
+
+
+#Trend by year
+NYSISO_data %>% 
+  group_by(Year = year(`Eastern Date Hour`)) %>% 
+  summarise(LBMP_Avr = mean(`DAM Zonal LBMP`)) %>% 
+  ggplot(aes(x = Year, y = LBMP_Avr)) +
+  geom_line() +
+  stat_smooth(method = "lm", formula = y ~ x, show.legend = TRUE, inherit.aes = TRUE, )
+
+
+#Trend by Month
+NYSISO_data %>% 
+  mutate("YearMonth" = year(`Eastern Date Hour`) + month(`Eastern Date Hour`)/12) %>% 
+  group_by(YearMonth) %>% 
+  summarise(LBMP_Avr = mean(`DAM Zonal LBMP`)) %>% 
+  ggplot(aes(x = YearMonth, y = LBMP_Avr)) +
+  geom_line() +
+  stat_smooth(method = "lm", formula = y ~ x, show.legend = TRUE, inherit.aes = TRUE, )
+
+#Look at historical pricing ranges 
+NYSISO_data %>% 
+  group_by(Month = month(`Eastern Date Hour`)) %>% 
+  summarise(LBMP_Avr = mean(`DAM Zonal LBMP`)) %>% 
+  ggplot(aes(Month, LBMP_Avr, fill = LBMP_Avr )) +
+  geom_bar(stat = "identity", position = "dodge")
+
+
+#Look at yearly averages 
+NYSISO_data %>% 
+  group_by(Year = year(`Eastern Date Hour`)) %>% 
+  summarise(LBMP_Avr = mean(`DAM Zonal LBMP`)) %>% 
+  ggplot(aes(Year, LBMP_Avr, fill = LBMP_Avr )) +
+  geom_bar(stat = "identity", position = "dodge")
+
 
 
 ```
+
+ISO Market data from: https://www.nyiso.com/custom-reports
 
 
 
