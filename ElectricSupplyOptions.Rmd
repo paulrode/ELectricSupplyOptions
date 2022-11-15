@@ -3,6 +3,8 @@ title: "TSP Energy Supply Modeling"
 output:
   html_document:
     df_print: paged
+  word_document: default
+  pdf_document: default
 ---
 
 
@@ -83,7 +85,7 @@ NYSISO_data %>%
 ISO Market data from: https://www.nyiso.com/custom-reports
 
 
-```{r Data Setup, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
+```{r Data Production, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
 
 "Comp520" <- read_excel("data/520 Madison.xlsx",skip = 1, col_types = c("date", "numeric","numeric","numeric","numeric","numeric","numeric","numeric","numeric" ) , col_names = c("TimeStamp", "A", "B", "C", "D", "E", "F", "G", "H"), na = "NA") %>% 
   mutate("Building" = "520 Madison Avenue", .before=1) %>%  
@@ -117,7 +119,7 @@ left_join(Comp520, NYSISO_data, by = "TimeStamp") %>%
 ISOCOMP_data %>% 
   ggplot(aes(x = `TimeStamp`, y = `Elect`)) +
   geom_line() +
-  stat_smooth(method = "lm", formula = y ~ x, show.legend = TRUE, inherit.aes = TRUE, )
+  stat_smooth(method = "lm", formula = y ~ x, show.legend = TRUE, inherit.aes = TRUE, ) 
            
 
 
