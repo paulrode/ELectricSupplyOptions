@@ -111,54 +111,30 @@ rm(Comp520a, Comp520b, Comp520c ) #Clean up
 
 colnames(NYSISO_data)[1] <- "TimeStamp"
 
-left_join(Comp520, NYSISO_data, by = "TimeStamp") %>% 
+inner_join(Comp520, NYSISO_data, by = "TimeStamp") %>% 
   na.omit() -> ISOCOMP_data
+ISOCOMP_data <- unique(ISOCOMP_data)
+ISOCOMP_data %>% 
+  select(c(2,1,6)) -> ISOCOMP_data
+colnames(ISOCOMP_data) <- c("TimeStamp", "Energy", "LBMP")
+
+
 
 
 
 ISOCOMP_data %>% 
-  ggplot(aes(x = `TimeStamp`, y = `Elect`)) +
+  ggplot(aes(x = `TimeStamp`, y = Energy)) +
   geom_line() +
+  geom_line(aes(y = LBMP*10, color = "red"))
   stat_smooth(method = "lm", formula = y ~ x, show.legend = TRUE, inherit.aes = TRUE, ) 
-           
+
+
+  
 
 
   
   
     
 ```
-
-################ UP TO HERE 
-
-
-#Campus EUI for each year 
-Energy %>% 
-  group_by(Date = year(Month)) %>% 
-  summarise(Steam_kbtu = sum(`District Steam\n(kBtu)`), Electric_kbtu = sum(`Electric - Grid\n(kBtu)`)) %>% 
-  gather(key = "Item", value = "Value", -Date) %>% 
-  filter(Date > 2017 & Date< 2022) -> UtilityData1
-
-  # Make an EUI plot with kBTU vales for both  electric and steam  
-UtilityData2 <- UtilityData1
-apply(UtilityData2[3], 1, function(row) row / BuildingGSF ) -> UtilityData2[3]
-
-
-UtilityData2 %>% 
-  ggplot(aes(x = Date, y = Value, fill = Item)) +
-  geom_bar(stat = "identity", position = "stack") +
-  labs( title = "Energy Use Density by fuel type",
-        subtitle = "Units are kBTU's per year per Gross Squar Feet") +
-  xlab("Year") +
-  ylab("kBTU/SF") +
-  scale_fill_manual(values = c("#CC0033", "#FFFFCC"))
-
-```
-  
-
-A look at three years of electric and steam consumption at Rockefeller Center using just annual consumption. We capture the Covid 2019 Governmental Lock Downs imposed March of 2020 to compare with the following 2 years. All values in were converted to kBTU's from kWh of electric, and from M pounds of steam. Total energy consumed in 2020 is of 2019, with no little to no physical occupancy all year the relatively small reduction consumption means that consumption is a weak function of physical occupancy. Total energy consumed in 2021 is of 2019.
-
-The drop in energy consumption 2019 to 2020 is due primarily the last of occupants so I posit that  is associated with occupant activities, with the remaining to hvac, IT, lighting, vertical transportation, and miscellaneous plug loads, and building staff, offset somewhat by increased ventelation due to covid protocals. Interesting that both steam and electric dropped by similar amounts. Steam which is mostly used for heating, I would have thought would go up to make up for the occupient body heat that is l
-
-
 
 
