@@ -136,12 +136,21 @@ ISOCOMP_data %>%
   stat_smooth(method = "lm", formula = y ~ x, show.legend = TRUE, inherit.aes = TRUE, )
   
   ISOCOMP_data %>% 
-    mutate('TotalCost' = ((0.5 * Energy /1000 * LBMP) + (0.5 * Energy / 1000 * 85.16))/Energy * 1000) -> ISOCOMP_data
+    mutate('UnitCost50_50' = (0.5 * LBMP) + (0.5 * 83.13)) %>% 
+    mutate('UnitCostFixed' = 81.80 ) %>%
+    mutate('HourlyCostFixed' = (Energy * UnitCostFixed / 1000) ) %>% 
+    mutate('HourlyCost50_50' = (Energy * UnitCost50_50 / 1000 ) ) %>% 
+    group_by(month(TimeStamp)) %>% 
+    summarise('Monthly_kWh' = sum(Energy), 'EnergyCost50_50' = sum(HourlyCost50_50), 'EnergyCostFixed' = sum(HourlyCostFixed)) %>% 
+    mutate('EnergyUnit50_50' = EnergyCost50_50 / Monthly_kWh, 'EnergyUnitFixed' = EnergyCostFixed / Monthly_kWh) -> M_ISOCOMP_data
   
-  ISOCOMP_data %>% 
-      ggplot(aes(x = `TimeStamp`, y = LBMP)) +
+  M_ISOCOMP_data %>% 
+    summarise('Cost50_50' = sum(EnergyCost50_50), 'CostFixed' = sum(EnergyCostFixed))
+  
+  M_ISOCOMP_data %>% 
+      ggplot(aes(x = `month(TimeStamp)`, y = EnergyCostFixed)) +
   geom_line(color = "grey") +
-  geom_line(aes(y = TotalCost), color = "green") +
+  geom_line(aes(y = EnergyCost50_50), color = "green") +
   theme_classic()
     
 ```
