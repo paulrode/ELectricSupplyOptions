@@ -36,6 +36,23 @@ do.call(rbind, lapply(list.files(pattern = ".csv"), read_csv)) -> NYSISO_data
 NYSISO_data$`Eastern Date Hour` <- ymd_hms(NYSISO_data$`Eastern Date Hour`)
 colnames(NYSISO_data)[1] <- "TimeStamp"
 
+"Comp520" <- read_excel("data/520 Madison.xlsx",skip = 1, col_types = c("date", "numeric","numeric","numeric","numeric","numeric","numeric","numeric","numeric" ) , col_names = c("TimeStamp", "A", "B", "C", "D", "E", "F", "G", "H"), na = "NA") %>% 
+  mutate("Building" = "520 Madison Avenue", .before=1) %>%  
+  mutate("Elect" = A + B + C + D + E + F + G + H, .keep = "unused")  
+ 
+Comp520 %>% 
+  select(TimeStamp) %>% 
+  filter(minute(TimeStamp) == 0 & second(TimeStamp) == 0)-> Comp520a
+
+Comp520a <- Comp520a[complete.cases(Comp520a),] 
+
+Calpine_Shaped_Block  <- read_excel("C:/Users/paulr/Documents/R/ElectricSupplyOptions/Calpine Pricing 11.1.2022.xlsx", sheet = "NY", range = "B3:K10" )
+
+Calpine_Seasonal_Blocks  <- read_excel("C:/Users/paulr/Documents/R/ElectricSupplyOptions/Calpine Pricing 11.1.2022.xlsx", sheet = "NY", range = "B13:K20" )
+
+
+
+
 # Plot data 
 
 
@@ -72,12 +89,11 @@ NYSISO_data_a %>%
 
 #LBMP Trend by Month
 NYSISO_data %>% 
-  mutate('Month' = month(TimeStamp)) -> NYSISO_data 
-NYSISO_data$Month <- as.factor(NYSISO_data$Month)
-NYSISO_data %>% 
+  mutate('Month' =as.factor(month(TimeStamp))) %>% 
   ggplot(aes(x = Month, y = `DAM Zonal LBMP`)) +
   geom_boxplot() +
-  stat_smooth(method = "lm", formula = y ~ x, show.legend = TRUE, inherit.aes = TRUE, )
+  scale_x_discrete(labels=month.abb)
+  
 
 #Look at historical pricing ranges 
 NYSISO_data %>% 
@@ -103,15 +119,6 @@ ISO Market data from: https://www.nyiso.com/custom-reports
 
 ```{r Data Production, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
 
-"Comp520" <- read_excel("data/520 Madison.xlsx",skip = 1, col_types = c("date", "numeric","numeric","numeric","numeric","numeric","numeric","numeric","numeric" ) , col_names = c("TimeStamp", "A", "B", "C", "D", "E", "F", "G", "H"), na = "NA") %>% 
-  mutate("Building" = "520 Madison Avenue", .before=1) %>%  
-  mutate("Elect" = A + B + C + D + E + F + G + H, .keep = "unused")  
- 
-Comp520 %>% 
-  select(TimeStamp) %>% 
-  filter(minute(TimeStamp) == 0 & second(TimeStamp) == 0) -> Comp520a
-
-Comp520a <- Comp520a[complete.cases(Comp520a),] 
 
 Comp520 %>% 
   group_by(y = year(TimeStamp), m = month(TimeStamp),d = day(TimeStamp), h = hour(TimeStamp)) %>% 
