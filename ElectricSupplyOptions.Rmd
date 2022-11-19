@@ -57,14 +57,13 @@ NYSISO_data %>%
   group_by(Year, Month) %>% 
   mutate('Year-Month' = paste(as.character(Year),as.character(Month), sep = '-')) %>% 
   summarise(LBMP_Avr = mean(`DAM Zonal LBMP`))  -> NYSISO_data_a
-
 NYSISO_data_a %>% 
   mutate('ym' = ym(paste(Year, Month, sep = '-'))) -> NYSISO_data_a
-
-#  ggplot(aes(x = , y = LBMP_Avr)) +
-#  geom_line() +
-#  theme_classic() +
-#  labs(x = "Date (Year - Month)", y = "Day Ahead Hourly LBMP ($/MWH)", title = "NYSISO LBMP Historical Trend by Month", caption = "ISO Market data from: https://www.nyiso.com/custom-reports" )
+NYSISO_data_a %>%  
+ ggplot(aes(x = ym , y = LBMP_Avr)) +
+  geom_col() +
+  theme_classic() +
+  labs(x = "Date (Year - Month)", y = "Monthly Average Day Ahead Hourly LBMP ($/MWH)", title = "NYSISO LBMP Historical Trend by Month", caption = "ISO Market data from: https://www.nyiso.com/custom-reports" )
 
 ###########################################################################
 
@@ -73,11 +72,11 @@ NYSISO_data_a %>%
 
 #LBMP Trend by Month
 NYSISO_data %>% 
-  mutate("YearMonth" = year(`TimeStamp`) + month(`TimeStamp`)/12) %>% 
-  group_by(YearMonth) %>% 
-  summarise(LBMP_Avr = mean(`DAM Zonal LBMP`)) %>% 
-  ggplot(aes(x = YearMonth, y = LBMP_Avr)) +
-  geom_line() +
+  mutate('Month' = month(TimeStamp)) -> NYSISO_data 
+NYSISO_data$Month <- as.factor(NYSISO_data$Month)
+NYSISO_data %>% 
+  ggplot(aes(x = Month, y = `DAM Zonal LBMP`)) +
+  geom_boxplot() +
   stat_smooth(method = "lm", formula = y ~ x, show.legend = TRUE, inherit.aes = TRUE, )
 
 #Look at historical pricing ranges 
