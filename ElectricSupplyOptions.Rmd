@@ -87,7 +87,6 @@ colnames(ISOCOMP_data) <- c("TimeStamp", "Energy", "LBMP")
     summarise('CostIndex' = sum(EnergyIndexCost), 'Cost50_50' = sum(EnergyCost50_50), 'CostFixed' = sum(EnergyCostFixed)) -> Annual_Cost_Estimates
 
 
-
 ```
 
 The electric energy market in New York include energy and ancillaries with the primary market by volumn and value being the Locational Based Marginal Price (LBMP) Hourly Day Ahead market. Other markets are the Spot, Installed Capacity (ICAP) and Congestion.
@@ -178,7 +177,7 @@ NYSISO_data %>%
 
 
 ```
-Figure shows electric consumption (orange plot) and LBMP (black plot) scaled to bring both plots on one graph and both synchronized to the same timestamps. The consumption is from an  electrically cooled, steam heated 1,000,000 gsf office building in midtown Manhattan. The office buildings consumption runs counter to the LBMP. 
+Figure 7 shows electric consumption (orange plot) and LBMP (black plot) scaled to bring both plots on one graph and both synchronized to the same timestamps. The consumption is from an  electrically cooled, steam heated 1,000,000 gsf office building in midtown Manhattan. The office buildings consumption runs counter to the LBMP. 
 
 ```{r Data Production, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
 
@@ -191,13 +190,17 @@ ISOCOMP_data %>%
   labs(x = "TimeStamp", y = "Hourly LBMP ($/MWH) & Comsumption (kWh)", title = "Figure 7:" ~underline("Relationship of Comsumption to LBMP"), caption = "ISO Market data from: https://www.nyiso.com/custom-reports & Aquacore Database")
 
 
-M_ISOCOMP_data %>% 
-  mutate('Fixed_Block' = EnergyCostFixed - EnergyCost50_50) %>% 
-  ggplot(aes(x = `month(TimeStamp)`, y = Fixed_Block)) +
-  geom_col(color = "grey") +
-  scale_x_discrete(labels=month.abb) +
+M_ISOCOMP_data[-c(13),] %>% 
+  gather(key= 'Strategy', value = 'Value', -`month(TimeStamp)`) -> MonthlyComparision
+MonthlyComparision$Strategy <- factor(MonthlyComparision$Strategy)
+
+MonthlyComparision %>% 
+  ggplot(aes(x = `month(TimeStamp)`, y = Value)) +
+  geom_col(aes(fill = Strategy), position = "dodge") +
   theme_classic() +
-    labs(x = "Month", y = "Annual Cost difference Fixed - 50/50 ($)", title = "Figure 8:" ~underline("Winning and looseing Months"))
+  labs(x = "Month", y = "Monthly Cost($)", title = "Figure 8:" ~underline("Comparision of Strategies by month")) 
+```  
+
 
 
 Annual_Cost_Estimates %>% 
@@ -205,7 +208,6 @@ Annual_Cost_Estimates %>%
 gsub('Cost*', '', Annual_Cost_Estimates$Strategy) -> Annual_Cost_Estimates$Strategy
 Annual_Cost_Estimates$Strategy <- factor(Annual_Cost_Estimates$Strategy, levels = Annual_Cost_Estimates$Strategy[order(Annual_Cost_Estimates$Value, decreasing = TRUE)]) 
 
-                                         
 Annual_Cost_Estimates %>% 
   ggplot(aes(x = Strategy, y = Value)) +
   geom_col(aes(fill = Strategy)) +
@@ -234,64 +236,7 @@ M_ISOCOMP_data[13,c(2:4)] <- M_ISOCOMP_data[13,c(2:4)] / 12
  
 ```
 
-Sensitivities Run at escalation all months at 30%
-
-```{r Sensitivity Analysis, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
-
-#Make more analysis to 2014 the polar vortex year. 
-R <- 1.3 # Esclation value to be multiplied to LBMP
-
-ISOCOMP_data_Run <- ISOCOMP_data
- 
- ISOCOMP_data_Run %>% 
-    mutate(LBMP = LBMP * R) %>% 
-    mutate('UnitCost50_50' = (0.5 * LBMP) + (0.5 * 83.13)) %>% 
-    mutate('UnitCostFixed' = 81.80 ) %>%
-    mutate('HourlyCostFixed' = (Energy * UnitCostFixed / 1000) ) %>% 
-    mutate('HourlyCost50_50' = (Energy * UnitCost50_50 / 1000 ) ) %>% 
-    group_by(month(TimeStamp)) %>% 
-    summarise('EnergyIndexCost' = sum(LBMP), 'Monthly_kWh' = sum(Energy), 'EnergyCost50_50' = sum(HourlyCost50_50), 'EnergyCostFixed' = sum(HourlyCostFixed)) %>% 
-    mutate('EnergyIndexUnit' = EnergyIndexCost / Monthly_kWh,  'EnergyUnit50_50' = EnergyCost50_50 / Monthly_kWh, 'EnergyUnitFixed' = EnergyCostFixed / Monthly_kWh) -> M_ISOCOMP_data_Run
-
-  
-  M_ISOCOMP_data_Run %>% 
-    summarise('CostIndex' = sum(EnergyIndexCost), 'Cost50_50' = sum(EnergyCost50_50), 'CostFixed' = sum(EnergyCostFixed)) -> Annual_Cost_Estimates_Run
-  
-  
-Annual_Cost_Estimates_Run %>% 
-  gather(key = 'Strategy', value = 'Value' ) -> Annual_Cost_Estimates_Run
-gsub('Cost*', '', Annual_Cost_Estimates_Run$Strategy) -> Annual_Cost_Estimates_Run$Strategy
-Annual_Cost_Estimates_Run$Strategy <- factor(Annual_Cost_Estimates_Run$Strategy, levels = Annual_Cost_Estimates_Run$Strategy[order(Annual_Cost_Estimates_Run$Value, decreasing = TRUE)])
-
-                                         
-Annual_Cost_Estimates_Run %>% 
-  ggplot(aes(x = Strategy, y = Value)) +
-  geom_col(aes(fill = Strategy)) +
-  labs(x = "Strategy", y = "Annual Cost($)", title = "Senstitivy 30% Esclation" ~underline("Bar Chart of Annual Costs ($)") ) +
-  theme_classic()
-  
-   # Work to make a table of the strtegies 
-
-M_ISOCOMP_data_Run$`month(TimeStamp)` <-  month.name[M_ISOCOMP_data_Run$`month(TimeStamp)`]
-M_ISOCOMP_data_Run %>% 
-  select(1,6,7,8) %>% 
-  adorn_totals(where = "row", fill = "-", na.rm = TRUE, name = "Mean") -> M_ISOCOMP_data_Run
-M_ISOCOMP_data_Run[13,c(2:4)] <- M_ISOCOMP_data_Run[13,c(2:4)] / 12
-
-
-  kable(M_ISOCOMP_data_Run, format = 'html',  
-         col.names = c("Month", "Index", "Energy", "Fixed"),
-         digits = 3, 
-         align = 'lccr',
-         caption = "Monthly Unit Cost of Electricy Supply ($/kWH)") %>% 
-  kable_styling(bootstrap_options = "striped",
-                full_width = F) %>%
-  footnote(c("2023 Electric Supply Options"))
-
-
-```
-
-Senstitivy with a polor vortex.
+Sensitivity with a polar vortex similar to the 2014 spike. 
 
 ```{r Polar Vortex, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
 
