@@ -7,8 +7,6 @@ output:
   pdf_document: default
 ---
 
-
-
 ```{r Data Setup, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
 
 # Load packages 
@@ -29,7 +27,6 @@ rm(place, my_packages ) #Clean up
 
 options(dplyr.summarise.inform = FALSE)  # Suppress text in Knit printout. 
 ```
-
 
 ```{r Data Read, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
 
@@ -92,7 +89,12 @@ colnames(ISOCOMP_data) <- c("TimeStamp", "Energy", "LBMP")
 
 
 ```
-The electric energy markets in New York is primarily the Locational Based Marginal Price (LBMP) Hourly Day Ahead market. Other markets are the Spot, Installed Capacity (ICAP) and Congestion. Most buiding owners engage in wholesale electric purchasing as a way to manage risk of short term price spikes as local utilities pass on real time costs to their rate payers. Figure 1 below show the hourly LBMP going back to 2009 for each hour of the year. The blue line is a linear model based on lease squares to show the overall trend direction, which has been decreasing for the last decade. In 2020 we see the trend changing with more opward volatility as Figure 2 shows better. For reference the 2014 polar vortex induced price spike can be see in Figure 1. 
+
+The electric energy market in New York include energy and ancillaries with the primary market by volumn and value being the Locational Based Marginal Price (LBMP) Hourly Day Ahead market. Other markets are the Spot, Installed Capacity (ICAP) and Congestion.
+
+Electric market participants are in wholesale electric markets to manage risk of short term price spikes. Figures 1 and 2 below show the hourly LBMP going back to 2009 and a focus on the last few months. The blue line is a linear model to show the overall trend direction, which has been decreasing for the last decade. In 2020 we see the trend changing with more upward volatility as Figure 2 shows better. For reference the 2014 polar vortex induced price spike can be see in Figure 1.
+
+Winter and summer peaks can be seen in Figure 3 which shows the average monthly prie per MWH. Also as expected the lowest average montly costs is during the swing seasons spring and fall.
 
 ```{r Market and Building Plots, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
 # Plot data 
@@ -118,7 +120,7 @@ NYSISO_data %>%
   labs(x = "Date (Year)", y = "Day Ahead Hourly LBMP ($/MWH)", title = "Figure 2:" ~underline("NYSISO LBMP  2020 - Present "), caption = "ISO Market data from: https://www.nyiso.com/custom-reports" )
 
 
-#LBMP Monthly
+#    FIGURE 3 - LBMP Monthly Average Costs 
 NYSISO_data %>% 
   mutate('Year' = year(TimeStamp), 'Month' = month(TimeStamp)) %>% 
   group_by(Year, Month) %>% 
@@ -135,10 +137,7 @@ NYSISO_data_a %>%
 rm(NYSISO_data_a)
 ```
 
-
-
-
-
+Figure 3 shows the distribution of LBMP by month over all years 2009 to present. Figure 4 shows the mean vales by month over the same time period. The takeaway here is the priminany of the winter months January and Fenuary and the summer July and August as triditionally peak cost months.
 
 ```{r, Average LBMP Plots figures-side, fig.show="hold", out.width="50%",  echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
 
@@ -165,9 +164,7 @@ labs(x = "Month", y = "Monthly Average Day Ahead Hourly LBMP ($/MWH)", title = "
 
 ```
 
-
-
-
+Figure six shows the annual distribution of LBMP for each year 2009 to present. We see the polar vortex had little influance on the mean cost for 2014 but did infact have very high short terms costs.
 
 ```{r Building Plots, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
 
@@ -181,8 +178,7 @@ NYSISO_data %>%
 
 
 ```
-
-
+Figure shows electric consumption (orange plot) and LBMP (black plot) scaled to bring both plots on one graph and both synchronized to the same timestamps. The consumption is from an  electrically cooled, steam heated 1,000,000 gsf office building in midtown Manhattan. The office buildings consumption runs counter to the LBMP. 
 
 ```{r Data Production, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
 
@@ -192,7 +188,7 @@ ISOCOMP_data %>%
   ggplot(aes(x = `TimeStamp`, y = Value)) +
   geom_line(aes(color = Item)) +
   scale_color_manual(values=c('grey','orange')) +
-  labs(x = "TimeStamp", y = "Hourly LBMP ($/MWH) & Comsumption (kWh)", title = "Figure 8:" ~underline("Relationship of Comsumption to LBMP"), caption = "ISO Market data from: https://www.nyiso.com/custom-reports & Aquacore Database")
+  labs(x = "TimeStamp", y = "Hourly LBMP ($/MWH) & Comsumption (kWh)", title = "Figure 7:" ~underline("Relationship of Comsumption to LBMP"), caption = "ISO Market data from: https://www.nyiso.com/custom-reports & Aquacore Database")
 
 
 M_ISOCOMP_data %>% 
@@ -200,22 +196,24 @@ M_ISOCOMP_data %>%
   ggplot(aes(x = `month(TimeStamp)`, y = Fixed_Block)) +
   geom_col(color = "grey") +
   scale_x_discrete(labels=month.abb) +
-  theme_classic()
+  theme_classic() +
+    labs(x = "Month", y = "Annual Cost difference Fixed - 50/50 ($)", title = "Figure 8:" ~underline("Winning and looseing Months"))
 
 
 Annual_Cost_Estimates %>% 
   gather(key = 'Strategy', value = 'Value' ) -> Annual_Cost_Estimates
 gsub('Cost*', '', Annual_Cost_Estimates$Strategy) -> Annual_Cost_Estimates$Strategy
-Annual_Cost_Estimates$Strategy <- factor(Annual_Cost_Estimates$Strategy, levels = Annual_Cost_Estimates$Strategy[order(Annual_Cost_Estimates$Value, decreasing = TRUE)])
+Annual_Cost_Estimates$Strategy <- factor(Annual_Cost_Estimates$Strategy, levels = Annual_Cost_Estimates$Strategy[order(Annual_Cost_Estimates$Value, decreasing = TRUE)]) 
 
                                          
 Annual_Cost_Estimates %>% 
   ggplot(aes(x = Strategy, y = Value)) +
   geom_col(aes(fill = Strategy)) +
-  theme_classic()
+  theme_classic() +
+  labs(x = "Strategy", y = "Annual Cost($)", title = "Figure 9:" ~underline("Comparision of Strategies"))
    
 
-# Work to make a table of the strtegies 
+# Work to make a table of the strategies 
 
 M_ISOCOMP_data$`month(TimeStamp)` <-  month.name[M_ISOCOMP_data$`month(TimeStamp)`]
 M_ISOCOMP_data %>% 
@@ -228,15 +226,15 @@ M_ISOCOMP_data[13,c(2:4)] <- M_ISOCOMP_data[13,c(2:4)] / 12
          col.names = c("Month", "Index", "Energy", "Fixed"),
          digits = 3, 
          align = 'lccr',
-         caption = "Monthly Unit Cost of Electricy Supply ($/kWH)") %>% 
+         caption = "Table 1: Monthly Unit Cost of Electricy Supply ($/kWH)") %>% 
   kable_styling(bootstrap_options = "striped",
                 full_width = F) %>%
   footnote(c("2023 Electric Supply Options"))
 
  
 ```
-Sensitivities 
-Run at escalation all months at 30%
+
+Sensitivities Run at escalation all months at 30%
 
 ```{r Sensitivity Analysis, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
 
@@ -293,7 +291,7 @@ M_ISOCOMP_data_Run[13,c(2:4)] <- M_ISOCOMP_data_Run[13,c(2:4)] / 12
 
 ```
 
-Senstitivy with a polor vortex. 
+Senstitivy with a polor vortex.
 
 ```{r Polar Vortex, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
 
@@ -356,5 +354,3 @@ M_ISOCOMP_data_Run[13,c(2:4)] <- M_ISOCOMP_data_Run[13,c(2:4)] / 12
 
 
 ```
-
-
