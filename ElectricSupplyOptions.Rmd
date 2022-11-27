@@ -116,7 +116,7 @@ NYSISO_data %>%
   stat_smooth(method = "lm", formula = y ~ x, show.legend = TRUE, inherit.aes = TRUE, ) +
   scale_x_datetime() +
   theme_classic() +
-  labs(x = "Date (Year)", y = "Day Ahead Hourly LBMP ($/MWH)", title = "Figure 2:" ~underline("NYSISO LBMP  2020 - Present "), caption = "ISO Market data from: https://www.nyiso.com/custom-reports" )
+  labs(x = "Date (Year)", y = "Day Ahead Hourly LBMP ($/MWH)", title = "Figure 2:" ~underline("NYSISO LBMP Zooming in on last 24 months"), caption = "ISO Market data from: https://www.nyiso.com/custom-reports" )
 
 
 #    FIGURE 3 - LBMP Monthly Average Costs 
@@ -131,8 +131,9 @@ NYSISO_data_a %>%
  ggplot(aes(x = ym , y = LBMP_Avr)) +
   geom_col() +
   stat_smooth(method = "lm", formula = y ~ x, show.legend = TRUE, inherit.aes = TRUE, ) +
-  theme_classic() +
-  labs(x = "Date (Year - Month)", y = "Monthly Average Day Ahead Hourly LBMP ($/MWH)", title = "Figure 3:" ~underline("Monthly Average LBMP"), caption = "ISO Market data from: https://www.nyiso.com/custom-reports" )
+  scale_x_date(labels = date_format("%Y"), breaks = "1 year",   minor_breaks = waiver()) +
+  theme(axis.text.x = element_text(angle=60, vjust = 0.5)) +
+  labs(x = "Date (Year - Month)", y = "Monthly Average Day Ahead Hourly LBMP ($/MWH)", title = "Figure 3:" ~underline("Monthly Average Costs LBMP"), caption = "ISO Market data from: https://www.nyiso.com/custom-reports" )
 rm(NYSISO_data_a)
 ```
 
@@ -186,22 +187,24 @@ ISOCOMP_data %>%
   gather("Item", "Value", -TimeStamp) %>% 
   ggplot(aes(x = `TimeStamp`, y = Value)) +
   geom_line(aes(color = Item)) +
-  scale_color_manual(values=c('grey','orange')) +
+  scale_color_manual(values=c('grey','orange'), name = "Plot", labels = c("Comsumption", "xLBMP")) +
   labs(x = "TimeStamp", y = "Hourly LBMP ($/MWH) & Comsumption (kWh)", title = "Figure 7:" ~underline("Relationship of Comsumption to LBMP"), caption = "ISO Market data from: https://www.nyiso.com/custom-reports & Aquacore Database")
 
 
-M_ISOCOMP_data[-c(13),] %>% 
+M_ISOCOMP_data[, -c(3,6,7,8)] %>% 
   gather(key= 'Strategy', value = 'Value', -`month(TimeStamp)`) -> MonthlyComparision
 MonthlyComparision$Strategy <- factor(MonthlyComparision$Strategy)
+MonthlyComparision$`month(TimeStamp)` <- month.abb[MonthlyComparision$`month(TimeStamp)`]
 
 MonthlyComparision %>% 
   ggplot(aes(x = `month(TimeStamp)`, y = Value)) +
   geom_col(aes(fill = Strategy), position = "dodge") +
   theme_classic() +
+    scale_fill_discrete(name = "Strategy", labels = c("50 / 50", "Fixed", "Index")) +
   labs(x = "Month", y = "Monthly Cost($)", title = "Figure 8:" ~underline("Comparision of Strategies by month")) 
 ```  
 
-
+```{r Annual Summeries, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
 
 Annual_Cost_Estimates %>% 
   gather(key = 'Strategy', value = 'Value' ) -> Annual_Cost_Estimates
@@ -242,7 +245,7 @@ Sensitivity with a polar vortex similar to the 2014 spike.
 
 #Make more analysis to 2014 the polar vortex year. 
 R <- 1
-PV <- 1.4
+PV <- 1.5
 
 ISOCOMP_data_Run <- ISOCOMP_data
 
@@ -289,7 +292,7 @@ M_ISOCOMP_data_Run[13,c(2:4)] <- M_ISOCOMP_data_Run[13,c(2:4)] / 12
 
 
   kable(M_ISOCOMP_data_Run, format = 'html',  
-         col.names = c("Month", "Index", "Energy", "Fixed"),
+         col.names = c("Month", "Index", "50/50", "Fixed"),
          digits = 3, 
          align = 'lccr',
          caption = "Monthly Unit Cost of Electricy Supply ($/kWH)") %>% 
