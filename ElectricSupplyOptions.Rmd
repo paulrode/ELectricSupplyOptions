@@ -10,7 +10,7 @@ output:
 ```{r Data Setup, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
 
 # Load packages 
-my_packages <- c("tidyverse", "vroom" , "timetk", "janitor" , "glue" , "tsibble" , "tidytext","lubridate", "fable", "tsibbledata", "ggplot2", "forecast", "tseries", "rio", "zoo", "readxl", "tsibbledata", "knitr", "formattable", "scales", "kable", "kableExtra", "dplyr")   
+my_packages <- c("tidyverse", "vroom" , "timetk", "janitor" , "glue" , "tsibble" , "tidytext","lubridate", "fable", "tsibbledata", "ggplot2", "forecast", "tseries", "rio", "zoo", "readxl", "tsibbledata", "knitr", "formattable", "scales", "kable", "kableExtra", "dplyr", "gridExtra")   
 
 invisible( lapply(my_packages, require, character.only = TRUE))
 
@@ -206,6 +206,8 @@ MonthlyComparision %>%
 
 ```{r Annual Summeries, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
 
+
+
 Annual_Cost_Estimates %>% 
   gather(key = 'Strategy', value = 'Value' ) -> Annual_Cost_Estimates
 gsub('Cost*', '', Annual_Cost_Estimates$Strategy) -> Annual_Cost_Estimates$Strategy
@@ -227,7 +229,7 @@ M_ISOCOMP_data %>%
 M_ISOCOMP_data[13,c(2:4)] <- M_ISOCOMP_data[13,c(2:4)] / 12
 
 
-  kable(M_ISOCOMP_data, format = 'html',  
+kable(M_ISOCOMP_data, format = 'html',  
          col.names = c("Month", "Index", "Energy", "Fixed"),
          digits = 3, 
          align = 'lccr',
