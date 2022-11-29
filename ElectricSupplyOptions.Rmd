@@ -95,6 +95,30 @@ Electric market participants are in wholesale electric markets to manage risk of
 
 Winter and summer peaks can be seen in Figure 3 which shows the average monthly prie per MWH. Also as expected the lowest average montly costs is during the swing seasons spring and fall.
 
+<u>Figure 1</u> 
+
+<u>Figure 2</u>
+
+<u>Figure 3</u>
+
+<u>Figure 4</u>
+
+<u>Figure 5</u>
+
+<u>Figure 6</u>
+
+<u>Figure 7</u>
+
+<u>Figure 8</u>
+
+<u>Figure 9</u>
+
+<u>Figure 10</u>
+
+<u>Table 1</u>
+
+<u>Table 2</u>
+
 ```{r Market and Building Plots, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
 # Plot data 
 
@@ -280,7 +304,8 @@ Annual_Cost_Estimates_Run$Strategy <- factor(Annual_Cost_Estimates_Run$Strategy,
 Annual_Cost_Estimates_Run %>% 
   ggplot(aes(x = Strategy, y = Value)) +
   geom_col(aes(fill = Strategy)) +
-  theme_classic()
+  theme_classic() +
+    labs(x = "Strategy", y = "Annual Cost($)", title = "Figure 10:" ~underline("Comparision of Strategies under a Polar Vortex Hit"))
   
    
 
