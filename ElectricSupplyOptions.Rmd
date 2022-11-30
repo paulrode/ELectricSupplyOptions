@@ -95,29 +95,29 @@ Electric market participants are in wholesale electric markets to manage risk of
 
 Winter and summer peaks can be seen in Figure 3 which shows the average monthly prie per MWH. Also as expected the lowest average montly costs is during the swing seasons spring and fall.
 
-<u>Figure 1</u> 
+<u>Figure 1</u>   Plot of hourly day ahead LBMP over time. The blue line shows a linear model and is used to show the general trend over the past decade. However the last 18 months has seen an increase. If this is lasting is yet to be seen.  
 
-<u>Figure 2</u>
+<u>Figure 2</u> This plot show the most reasent few months hourly day ahead LBMP plot. Demonstrating that the declining market has changed direction. 
 
-<u>Figure 3</u>
+<u>Figure 3</u> This plot show the average cost per month and show us where the highest and lowest priced months are for informing when to exercise energy efficiency exercises or when to puchase fixed price blocks. 
 
-<u>Figure 4</u>
+<u>Figure 4</u> The box chart show more accurately the pricing distribution each month, interesting to see that the 2014 polar vortex did not effect the mean pricing that much. 
 
-<u>Figure 5</u>
+<u>Figure 5</u> This bar chart show the means in a more readeable scale. These are the same means shown in the box charts. 
 
-<u>Figure 6</u>
+<u>Figure 6</u> This chart Show the pricing distributions for each year, again demonstrating the general trend of pricing. Note that declining markets favor variable strategies, and increasing strategies favor fixed stratiges. 
 
-<u>Figure 7</u>
+<u>Figure 7</u> This chart show the horuly day ahead pricing superimposed with the hourly consumption data from 520 Madison with its electric cooling plant and ice storage system. 
 
-<u>Figure 8</u>
+<u>Figure 8</u>  The most important chart in the set, this bar chart show a comparison of the 3 strategies under consideration fixed, 50/50 which meand 50% of each day's consumption will be purchased on the variable index - the LBMP, the remaining 50% off a fixed cost block contract, and finaly a full variable or index contract. We see that the lowest cost strategy is the variable and the highest cost is the full fixed contract. 
 
-<u>Figure 9</u>
+<u>Figure 9</u> This chart shows the annual performance of the three strategies. 
 
-<u>Figure 10</u>
+<u>Figure 10</u> This chart show the affect on annual performance of the three strategies given a 2014 like polar vortex. 
 
-<u>Table 1</u>
+<u>Table 1</u> This is the data table used to develop the annual comparative bar chart in Figure 9 
 
-<u>Table 2</u>
+<u>Table 2</u> This is the data table used to develop the annual comparative bar chart in Figure 10. 
 
 ```{r Market and Building Plots, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
 # Plot data 
