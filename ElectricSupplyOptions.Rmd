@@ -252,12 +252,21 @@ M_ISOCOMP_data %>%
   adorn_totals(where = "row", fill = "-", na.rm = TRUE, name = "Mean") -> M_ISOCOMP_data
 M_ISOCOMP_data[13,c(2:4)] <- M_ISOCOMP_data[13,c(2:4)] / 12
 
+kable(Annual_Cost_Estimates, format = 'html',
+      col.names = c("Strategy", "Annual Estimate"),
+      digits = 0,
+      align = 'll',
+      caption = "Table 1: Annual Estimates of spend by strategy") %>% 
+  kable_styling(bootstrap_options = "striped",
+                full_width = F) %>%
+  footnote(c("2023 Electric Supply Options"))
+
 
 kable(M_ISOCOMP_data, format = 'html',  
          col.names = c("Month", "Index", "Energy", "Fixed"),
          digits = 3, 
          align = 'lccr',
-         caption = "Table 1: Monthly Unit Cost of Electricy Supply ($/kWH)") %>% 
+         caption = "Table 2: Monthly Unit Cost of Electricy Supply ($/kWH)") %>% 
   kable_styling(bootstrap_options = "striped",
                 full_width = F) %>%
   footnote(c("2023 Electric Supply Options"))
@@ -322,7 +331,7 @@ M_ISOCOMP_data_Run[13,c(2:4)] <- M_ISOCOMP_data_Run[13,c(2:4)] / 12
          col.names = c("Month", "Index", "50/50", "Fixed"),
          digits = 3, 
          align = 'lccr',
-         caption = "Monthly Unit Cost of Electricy Supply ($/kWH)") %>% 
+         caption = "Table 3:  Monthly Unit Cost of Electricy Supply ($/kWH)") %>% 
   kable_styling(bootstrap_options = "striped",
                 full_width = F) %>%
   footnote(c("2023 Electric Supply Options"))
