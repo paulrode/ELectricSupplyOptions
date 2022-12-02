@@ -119,6 +119,11 @@ Winter and summer peaks can be seen in Figure 3 which shows the average monthly 
 
 <u>Table 2</u> This is the data table used to develop the annual comparative bar chart in Figure 10. 
 
+
+<u>Table 3</u> This is the data table used to develop the annual comparative bar chart in Figure 10. 
+
+
+<u>Table 4</u> This is the data table used to develop the annual comparative bar chart in Figure 10. 
 ```{r Market and Building Plots, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
 # Plot data 
 
@@ -320,6 +325,18 @@ Annual_Cost_Estimates_Run %>%
 
 # Work to make a table of the strategies 
 
+kable(Annual_Cost_Estimates_Run, format = 'html',
+      col.names = c("Strategy", "Annual Estimate"),
+      digits = 0,
+      align = 'll',
+      caption = "Table 3: Annual Estimates of spend by strategy") %>% 
+  kable_styling(bootstrap_options = "striped",
+                full_width = F) %>%
+  footnote(c("2023 Electric Supply Options"))
+
+
+
+
 M_ISOCOMP_data_Run$`month(TimeStamp)` <-  month.name[M_ISOCOMP_data_Run$`month(TimeStamp)`]
 M_ISOCOMP_data_Run %>% 
   select(1,6,7,8) %>% 
@@ -331,7 +348,87 @@ M_ISOCOMP_data_Run[13,c(2:4)] <- M_ISOCOMP_data_Run[13,c(2:4)] / 12
          col.names = c("Month", "Index", "50/50", "Fixed"),
          digits = 3, 
          align = 'lccr',
-         caption = "Table 3:  Monthly Unit Cost of Electricy Supply ($/kWH)") %>% 
+         caption = "Table 4:  Monthly Unit Cost of Electricy Supply ($/kWH)") %>% 
+  kable_styling(bootstrap_options = "striped",
+                full_width = F) %>%
+  footnote(c("2023 Electric Supply Options"))
+
+
+```
+
+
+
+
+
+
+```{r Recession, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
+
+#Make more analysis to 2014 the polar vortex year. 
+R <- .7
+PV <- 1
+
+ISOCOMP_data_Run2 <- ISOCOMP_data
+
+# Multiply Jan Feb by PV defined above in this section. 
+ISOCOMP_data_Run2 %>% 
+    mutate_at(vars(c('LBMP')), ~ifelse((month(TimeStamp) == 01 | month(TimeStamp) == 02) , LBMP * PV, LBMP )) -> ISOCOMP_data_Run2
+
+ 
+ ISOCOMP_data_Run2 %>% 
+    mutate(LBMP = LBMP * R) %>% 
+    mutate('UnitCost50_50' = (0.5 * LBMP) + (0.5 * 83.13)) %>% 
+    mutate('UnitCostFixed' = 81.80 ) %>%
+    mutate('HourlyCostFixed' = (Energy * UnitCostFixed / 1000) ) %>% 
+    mutate('HourlyCost50_50' = (Energy * UnitCost50_50 / 1000 ) ) %>% 
+    group_by(month(TimeStamp)) %>% 
+    summarise('EnergyIndexCost' = sum(LBMP), 'Monthly_kWh' = sum(Energy), 'EnergyCost50_50' = sum(HourlyCost50_50), 'EnergyCostFixed' = sum(HourlyCostFixed)) %>% 
+    mutate('EnergyIndexUnit' = EnergyIndexCost / Monthly_kWh,  'EnergyUnit50_50' = EnergyCost50_50 / Monthly_kWh, 'EnergyUnitFixed' = EnergyCostFixed / Monthly_kWh) -> M_ISOCOMP_data_Run2
+
+  
+  M_ISOCOMP_data_Run2 %>% 
+    summarise('CostIndex' = sum(EnergyIndexCost), 'Cost50_50' = sum(EnergyCost50_50), 'CostFixed' = sum(EnergyCostFixed)) -> Annual_Cost_Estimates_Run2
+  
+  
+Annual_Cost_Estimates_Run2 %>% 
+  gather(key = 'Strategy', value = 'Value' ) -> Annual_Cost_Estimates_Run2
+gsub('Cost*', '', Annual_Cost_Estimates_Run$Strategy) -> Annual_Cost_Estimates_Run2$Strategy
+Annual_Cost_Estimates_Run2$Strategy <- factor(Annual_Cost_Estimates_Run$Strategy, levels = Annual_Cost_Estimates_Run2$Strategy[order(Annual_Cost_Estimates_Run$Value, decreasing = TRUE)])
+
+                                         
+Annual_Cost_Estimates_Run2 %>% 
+  ggplot(aes(x = Strategy, y = Value)) +
+  geom_col(aes(fill = Strategy)) +
+  theme_classic() +
+    labs(x = "Strategy", y = "Annual Cost($)", title = "Figure 10:" ~underline("Comparision of Strategies under a Polar Vortex Hit"))
+  
+   
+
+# Work to make a table of the strategies 
+
+kable(Annual_Cost_Estimates_Run2, format = 'html',
+      col.names = c("Strategy", "Annual Estimate"),
+      digits = 0,
+      align = 'll',
+      caption = "Table 3: Annual Estimates of spend by strategy") %>% 
+  kable_styling(bootstrap_options = "striped",
+                full_width = F) %>%
+  footnote(c("2023 Electric Supply Options"))
+
+
+
+
+M_ISOCOMP_data_Run2$`month(TimeStamp)` <-  month.name[M_ISOCOMP_data_Run2$`month(TimeStamp)`]
+M_ISOCOMP_data_Run2 %>% 
+  select(1,6,7,8) %>% 
+  adorn_totals(where = "row", fill = "-", na.rm = TRUE, name = "Mean") -> M_ISOCOMP_data_Run2
+M_ISOCOMP_data_Run2[13,c(2:4)] <- M_ISOCOMP_data_Run2[13,c(2:4)] / 12
+
+
+  kable(M_ISOCOMP_data_Run2, format = 'html',  
+         col.names = c("Month", "Index", "50/50", "Fixed"),
+         digits = 3, 
+         align = 'lccr',
+         caption = "Table 4:  Monthly Unit Cost of Electricy Supply ($/kWH)") %>% 
   kable_styling(bootstrap_options = "striped",
                 full_width = F) %>%
   footnote(c("2023 Electric Supply Options"))
