@@ -113,17 +113,18 @@ Winter and summer peaks can be seen in Figure 3 which shows the average monthly 
 
 <u>Figure 9</u> This chart shows the annual performance of the three strategies. 
 
-<u>Figure 10</u> This chart show the affect on annual performance of the three strategies given a 2014 like polar vortex. 
+<u>Figure 10</u> This chart show the effect on annual performance of the three strategies given a 2014 like polar vortex. 
+
+<u>Figure 11</u> This chart show the effect on annual performance of the three strategies given a recession induced declining energy market. 
 
 <u>Table 1</u> This is the data table used to develop the annual comparative bar chart in Figure 9 
 
 <u>Table 2</u> This is the data table used to develop the annual comparative bar chart in Figure 10. 
 
 
-<u>Table 3</u> This is the data table used to develop the annual comparative bar chart in Figure 10. 
+<u>Table 3</u> This is the data table used to develop the annual comparative bar chart in Figure 11. 
 
-
-<u>Table 4</u> This is the data table used to develop the annual comparative bar chart in Figure 10. 
+ 
 ```{r Market and Building Plots, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
 # Plot data 
 
@@ -246,7 +247,9 @@ Annual_Cost_Estimates %>%
   ggplot(aes(x = Strategy, y = Value)) +
   geom_col(aes(fill = Strategy)) +
   theme_classic() +
-  labs(x = "Strategy", y = "Annual Cost($)", title = "Figure 9:" ~underline("Comparision of Strategies"))
+  labs(x = "Strategy", y = "Annual Cost($)", title = "Figure 9:" ~underline("Comparision of Strategies")) -> Figure9
+
+Figure9
    
 
 # Work to make a table of the strategies 
@@ -274,7 +277,7 @@ kable(M_ISOCOMP_data, format = 'html',
          caption = "Table 2: Monthly Unit Cost of Electricy Supply ($/kWH)") %>% 
   kable_styling(bootstrap_options = "striped",
                 full_width = F) %>%
-  footnote(c("2023 Electric Supply Options"))
+  footnote(c("2023 Electric Supply Options")) -> MonthUnitCost
 
  
 ```
@@ -319,7 +322,9 @@ Annual_Cost_Estimates_Run %>%
   ggplot(aes(x = Strategy, y = Value)) +
   geom_col(aes(fill = Strategy)) +
   theme_classic() +
-    labs(x = "Strategy", y = "Annual Cost($)", title = "Figure 10:" ~underline("Comparision of Strategies under a Polar Vortex Hit"))
+    labs(x = "Strategy", y = "Annual Cost($)", title = "Figure 10:" ~underline("Comparision of Strategies under a Polar Vortex Hit")) -> Figure10
+
+Figure10
   
    
 
@@ -329,7 +334,7 @@ kable(Annual_Cost_Estimates_Run, format = 'html',
       col.names = c("Strategy", "Annual Estimate"),
       digits = 0,
       align = 'll',
-      caption = "Table 3: Annual Estimates of spend by strategy") %>% 
+      caption = "Table 2: Spend under a Polar Vortex") %>% 
   kable_styling(bootstrap_options = "striped",
                 full_width = F) %>%
   footnote(c("2023 Electric Supply Options"))
@@ -351,7 +356,7 @@ M_ISOCOMP_data_Run[13,c(2:4)] <- M_ISOCOMP_data_Run[13,c(2:4)] / 12
          caption = "Table 4:  Monthly Unit Cost of Electricy Supply ($/kWH)") %>% 
   kable_styling(bootstrap_options = "striped",
                 full_width = F) %>%
-  footnote(c("2023 Electric Supply Options"))
+  footnote(c("2023 Electric Supply Options")) -> MonthUnitCostVortex
 
 
 ```
@@ -399,7 +404,9 @@ Annual_Cost_Estimates_Run2 %>%
   ggplot(aes(x = Strategy, y = Value)) +
   geom_col(aes(fill = Strategy)) +
   theme_classic() +
-    labs(x = "Strategy", y = "Annual Cost($)", title = "Figure 10:" ~underline("Comparision of Strategies under a Polar Vortex Hit"))
+    labs(x = "Strategy", y = "Annual Cost($)", title = "Figure 11:" ~underline("Comparision of Strategies under a Recession")) -> Figure11
+
+Figure11
   
    
 
@@ -409,7 +416,7 @@ kable(Annual_Cost_Estimates_Run2, format = 'html',
       col.names = c("Strategy", "Annual Estimate"),
       digits = 0,
       align = 'll',
-      caption = "Table 3: Annual Estimates of spend by strategy") %>% 
+      caption = "Table 3: Spend under a Recession") %>% 
   kable_styling(bootstrap_options = "striped",
                 full_width = F) %>%
   footnote(c("2023 Electric Supply Options"))
@@ -431,7 +438,21 @@ M_ISOCOMP_data_Run2[13,c(2:4)] <- M_ISOCOMP_data_Run2[13,c(2:4)] / 12
          caption = "Table 4:  Monthly Unit Cost of Electricy Supply ($/kWH)") %>% 
   kable_styling(bootstrap_options = "striped",
                 full_width = F) %>%
-  footnote(c("2023 Electric Supply Options"))
+  footnote(c("2023 Electric Supply Options")) -> MonthUnitCostRecession
 
 
 ```
+
+```{r Comparisions, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
+
+par(mfrow=c(1,3))
+
+Figure9
+Figure10
+Figure11
+
+
+
+```
+
+
