@@ -249,8 +249,16 @@ Annual_Cost_Estimates %>%
   theme_classic() +
   labs(x = "Strategy", y = "Annual Cost($)", title = "Figure 9:" ~underline("Comparision of Strategies")) -> Figure9
 
-Figure9
-   
+#Plot for side by side 
+Annual_Cost_Estimates %>% 
+  ggplot(aes(x = Strategy, y = Value)) +
+  geom_col(aes(fill = Strategy)) +
+  guides(fill=FALSE) +
+  theme(axis.text.x = element_text(angle=60, vjust = 0.5) ) +
+  labs(x = "Strategy", y = "Annual Cost($)", title = "Figure 9:" ~underline("2023")) -> Figure9a
+
+
+
 
 # Work to make a table of the strategies 
 
@@ -324,7 +332,16 @@ Annual_Cost_Estimates_Run %>%
   theme_classic() +
     labs(x = "Strategy", y = "Annual Cost($)", title = "Figure 10:" ~underline("Comparision of Strategies under a Polar Vortex Hit")) -> Figure10
 
-Figure10
+
+#For side by side plots 
+Annual_Cost_Estimates_Run %>% 
+  ggplot(aes(x = Strategy, y = Value)) +
+  geom_col(aes(fill = Strategy)) +
+  guides(fill=FALSE) +
+  theme(axis.text.x = element_text(angle=60, vjust = 0.5) ) +
+  labs(x = "Strategy", y = "Annual Cost($)", title = "Figure 10:" ~underline("Polar")) -> Figure10a
+
+
   
    
 
@@ -404,11 +421,19 @@ Annual_Cost_Estimates_Run2 %>%
   ggplot(aes(x = Strategy, y = Value)) +
   geom_col(aes(fill = Strategy)) +
   theme_classic() +
-    labs(x = "Strategy", y = "Annual Cost($)", title = "Figure 11:" ~underline("Comparision of Strategies under a Recession")) -> Figure11
+    labs(x = "Strategy", y = "Annual Cost($)", title = "Figure 11:" ~underline("Comparision of strategies under a Recession")) -> Figure11
 
-Figure11
-  
-   
+
+#For side by side plot 
+Annual_Cost_Estimates_Run2 %>% 
+  ggplot(aes(x = Strategy, y = Value)) +
+  geom_col(aes(fill = Strategy)) +
+  theme(axis.text.x = element_text(angle=60, vjust = 0.5) ) +
+  guides(fill=FALSE) +
+    labs(x = "Strategy", y = "Annual Cost($)", title = "Figure 11:" ~underline("Recession")) -> Figure11a
+Figure11a
+
+
 
 # Work to make a table of the strategies 
 
@@ -445,11 +470,9 @@ M_ISOCOMP_data_Run2[13,c(2:4)] <- M_ISOCOMP_data_Run2[13,c(2:4)] / 12
 
 ```{r Comparisions, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
 
-par(mfrow=c(1,3))
+ grid.arrange(Figure9a, Figure10a, Figure11a, ncol=3)
 
-Figure9
-Figure10
-Figure11
+
 
 
 
