@@ -111,18 +111,15 @@ Winter and summer peaks can be seen in Figure 3 which shows the average monthly 
 
 <u>Figure 8</u>  The most important chart in the set, this bar chart show a comparison of the 3 strategies under consideration fixed, 50/50 which meand 50% of each day's consumption will be purchased on the variable index - the LBMP, the remaining 50% off a fixed cost block contract, and finaly a full variable or index contract. We see that the lowest cost strategy is the variable and the highest cost is the full fixed contract. 
 
-<u>Figure 9</u> This chart shows the annual performance of the three strategies. 
+<u>Figure 9</u> This chart shows the annual performance of the three strategies for 2023. 
 
 <u>Figure 10</u> This chart show the effect on annual performance of the three strategies given a 2014 like polar vortex. 
 
 <u>Figure 11</u> This chart show the effect on annual performance of the three strategies given a recession induced declining energy market. 
 
-<u>Table 1</u> This is the data table used to develop the annual comparative bar chart in Figure 9 
-
-<u>Table 2</u> This is the data table used to develop the annual comparative bar chart in Figure 10. 
+<u>Table 1</u> Comparision  of the projected spend for 2023 compaired to a year with a 2014 like polar vortex, or a 2009 like recession. 
 
 
-<u>Table 3</u> This is the data table used to develop the annual comparative bar chart in Figure 11. 
 
  
 ```{r Market and Building Plots, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
@@ -258,8 +255,6 @@ Annual_Cost_Estimates %>%
   labs(x = "Strategy", y = "Annual Cost($)", title = "Figure 9:" ~underline("2023")) -> Figure9a
 
 
-
-
 # Work to make a table of the strategies 
 
 M_ISOCOMP_data$`month(TimeStamp)` <-  month.name[M_ISOCOMP_data$`month(TimeStamp)`]
@@ -275,7 +270,12 @@ kable(Annual_Cost_Estimates, format = 'html',
       caption = "Table 1: Annual Estimates of spend by strategy") %>% 
   kable_styling(bootstrap_options = "striped",
                 full_width = F) %>%
-  footnote(c("2023 Electric Supply Options"))
+  footnote(c("2023 Electric Supply Options")) -> Figure9aTable 
+
+
+
+
+
 
 
 kable(M_ISOCOMP_data, format = 'html',  
@@ -318,6 +318,7 @@ ISOCOMP_data_Run %>%
   
   M_ISOCOMP_data_Run %>% 
     summarise('CostIndex' = sum(EnergyIndexCost), 'Cost50_50' = sum(EnergyCost50_50), 'CostFixed' = sum(EnergyCostFixed)) -> Annual_Cost_Estimates_Run
+
   
   
 Annual_Cost_Estimates_Run %>% 
@@ -354,7 +355,7 @@ kable(Annual_Cost_Estimates_Run, format = 'html',
       caption = "Table 2: Spend under a Polar Vortex") %>% 
   kable_styling(bootstrap_options = "striped",
                 full_width = F) %>%
-  footnote(c("2023 Electric Supply Options"))
+  footnote(c("2023 Electric Supply Options")) -> Figure10aTable
 
 
 
@@ -431,7 +432,7 @@ Annual_Cost_Estimates_Run2 %>%
   theme(axis.text.x = element_text(angle=60, vjust = 0.5) ) +
   guides(fill=FALSE) +
     labs(x = "Strategy", y = "Annual Cost($)", title = "Figure 11:" ~underline("Recession")) -> Figure11a
-Figure11a
+
 
 
 
@@ -444,7 +445,7 @@ kable(Annual_Cost_Estimates_Run2, format = 'html',
       caption = "Table 3: Spend under a Recession") %>% 
   kable_styling(bootstrap_options = "striped",
                 full_width = F) %>%
-  footnote(c("2023 Electric Supply Options"))
+  footnote(c("2023 Electric Supply Options")) -> Figure11aTable 
 
 
 
@@ -470,10 +471,18 @@ M_ISOCOMP_data_Run2[13,c(2:4)] <- M_ISOCOMP_data_Run2[13,c(2:4)] / 12
 
 ```{r Comparisions, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
 
- grid.arrange(Figure9a, Figure10a, Figure11a, ncol=3)
+grid.arrange(Figure9a, Figure10a, Figure11a, ncol=3)
 
-
-
+left_join(Annual_Cost_Estimates, Annual_Cost_Estimates_Run, by = "Strategy") %>% 
+  left_join(Annual_Cost_Estimates_Run2, by = "Strategy") -> AnnualCostComparisionsTable
+kable(AnnualCostComparisionsTable, format = 'html',
+      col.names = c("Strategy", "2023", "Polar", "Recession"),
+      digits = 0,
+      align = 'lrrr',
+      caption = "Table 1: Spend under various scenarios") %>% 
+  kable_styling(bootstrap_options = "striped",
+                full_width = F) %>%
+  footnote(c("2023 Electric Supply Options")) 
 
 
 ```
