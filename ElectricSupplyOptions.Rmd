@@ -103,19 +103,22 @@ Winter and summer peaks can be seen in Figure 3 which shows the average monthly 
 
 <u>Figure 4</u> The box chart show more accurately the pricing distribution each month, interesting to see that the 2014 polar vortex did not effect the mean pricing that much. 
 
-<u>Figure 5</u> This bar chart show the means in a more readeable scale. These are the same means shown in the box charts. 
+<u>Figure 4a</u> The box chart show more accurately the pricing distribution each month, interesting to see that the 2014 polar vortex did not effect the mean pricing that much. 
 
-<u>Figure 6</u> This chart Show the pricing distributions for each year, again demonstrating the general trend of pricing. Note that declining markets favor variable strategies, and increasing strategies favor fixed stratiges. 
 
-<u>Figure 7</u> This chart show the horuly day ahead pricing superimposed with the hourly consumption data from 520 Madison with its electric cooling plant and ice storage system. 
+<u>Figure 6</u> This bar chart show the means in a more readeable scale. These are the same means shown in the box charts. 
 
-<u>Figure 8</u>  The most important chart in the set, this bar chart show a comparison of the 3 strategies under consideration fixed, 50/50 which meand 50% of each day's consumption will be purchased on the variable index - the LBMP, the remaining 50% off a fixed cost block contract, and finaly a full variable or index contract. We see that the lowest cost strategy is the variable and the highest cost is the full fixed contract. 
+<u>Figure 7</u> This chart Show the pricing distributions for each year, again demonstrating the general trend of pricing. Note that declining markets favor variable strategies, and increasing strategies favor fixed stratiges. 
 
-<u>Figure 9</u> This chart shows the annual performance of the three strategies for 2023. 
+<u>Figure 8</u> This chart show the horuly day ahead pricing superimposed with the hourly consumption data from 520 Madison with its electric cooling plant and ice storage system. 
 
-<u>Figure 10</u> This chart show the effect on annual performance of the three strategies given a 2014 like polar vortex. 
+<u>Figure 9</u>  The most important chart in the set, this bar chart show a comparison of the 3 strategies under consideration fixed, 50/50 which meand 50% of each day's consumption will be purchased on the variable index - the LBMP, the remaining 50% off a fixed cost block contract, and finaly a full variable or index contract. We see that the lowest cost strategy is the variable and the highest cost is the full fixed contract. 
 
-<u>Figure 11</u> This chart show the effect on annual performance of the three strategies given a recession induced declining energy market. 
+<u>Figure 10</u> This chart shows the annual performance of the three strategies for 2023. 
+
+<u>Figure 11</u> This chart show the effect on annual performance of the three strategies given a 2014 like polar vortex. 
+
+<u>Figure 12</u> This chart show the effect on annual performance of the three strategies given a recession induced declining energy market. 
 
 <u>Table 1</u> Comparision  of the projected spend for 2023 compaired to a year with a 2014 like polar vortex, or a 2009 like recession. 
 
@@ -168,18 +171,27 @@ Figure 3 shows the distribution of LBMP by month over all years 2009 to present.
 
 ```{r, Average LBMP Plots figures-side, fig.show="hold", out.width="50%",  echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
 
-par(mfrow=c(1,2))
+par(mfrow=c(2,2))
 
-#LBMP Range of LBMP by month
+#Table 4
 NYSISO_data %>% 
   mutate('Month' =as.factor(month(TimeStamp))) %>% 
   ggplot(aes(x = Month, y = `DAM Zonal LBMP`)) +
   geom_boxplot( coef = 1.0) +
   scale_x_discrete(labels=month.abb) +
   labs(x = "Date (Month)", y = "Average LBMP ($/MWH)", title = "Figure 4:" ~underline("Box and Whisker Historical Average LBMP ($/MWH)") )
-  
 
+#Table 5  
+NYSISO_data %>% 
+  filter(hour(TimeStamp) <=20 & hour(TimeStamp) >= 7 ) %>% 
+  mutate('Month' =as.factor(month(TimeStamp))) %>% 
+  ggplot(aes(x = Month, y = `DAM Zonal LBMP`)) +
+  geom_boxplot( coef = 1.0) +
+  scale_x_discrete(labels=month.abb) +
+  labs(x = "Date (Month)", y = "Average LBMP ($/MWH)", title = "Figure 5:" ~underline("Box and Whisker Historical Average LBMP over BUILDING BUSINESS HOURS ($/MWH)") )
 #Look at historical average monthly pricing  
+
+#Table 6
 NYSISO_data %>% 
   group_by(Month = as.factor(month(`TimeStamp`))) %>% 
     summarise(LBMP_Avr = mean(`DAM Zonal LBMP`)) %>% 
@@ -187,7 +199,16 @@ NYSISO_data %>%
   geom_bar(stat = "identity", position = "dodge", show.legend = FALSE, fill = "grey") +
   scale_x_discrete(labels=month.abb) +
   theme_classic() +
-labs(x = "Month", y = "Monthly Average Day Ahead Hourly LBMP ($/MWH)", title = "Figure 5:" ~underline("Historical Monthly Average LBMP by Month"))
+labs(x = "Month", y = "Monthly Average Day Ahead Hourly LBMP ($/MWH)", title = "Figure 6:" ~underline("Historical Monthly Average LBMP by Month"))
+
+
+# Table 7 Yearly averages 
+NYSISO_data %>% 
+  mutate('Year' =as.factor(year(TimeStamp))) %>% 
+  ggplot(aes(x = Year, y = `DAM Zonal LBMP`)) +
+  geom_boxplot( coef = 1.0) +
+  scale_x_discrete() +
+  labs(x = "Year", y = "Annual Average LBMP ($/MWH)", title = "Figure 7:" ~underline("Box and Whisker Average Annual LBMP ($/MWH)") )
 
 ```
 
