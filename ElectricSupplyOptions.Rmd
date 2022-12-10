@@ -129,24 +129,32 @@ Winter and summer peaks can be seen in Figure 3 which shows the average monthly 
 # Plot data 
 
 
-#LBMP trend over time
+#Figure 1: LBMP trend over time
 NYSISO_data %>% 
   ggplot(aes(x = `TimeStamp`, y = `DAM Zonal LBMP`)) +
   geom_line() +
   stat_smooth(method = "lm", formula = y ~ x, show.legend = TRUE, inherit.aes = TRUE, ) +
   scale_x_datetime() +
   theme_classic() +
-  labs(x = "Date (Year)", y = "Day Ahead Hourly LBMP ($/MWH)", title = "Figure 1:" ~underline("NYSISO LBMP 2009 - Present"), caption = "ISO Market data from: https://www.nyiso.com/custom-reports" )
+  labs(x = "Date (Year)", y = "Day Ahead Hourly LBMP ($/MWH)", title = "Figure 1:" ~underline("NYSISO LBMP 2009 - Present"), caption = "ISO Market data from: https://www.nyiso.com/custom-reports" ) +
+    geom_segment(aes(x = as.POSIXct("2020-05-29 07:00:00"), y = 5, xend = as.POSIXct("2020-05-29 07:00:00"), yend =300 ),  linewidth = 100, linejoin =  "round")  +
+      geom_segment(aes(x = as.POSIXct("2022-11-12 07:00:00"), y = 5, xend = as.POSIXct("2022-11-12 07:00:00"), yend =300 ),  linewidth = 100, linejoin =  "round") +
+      geom_segment(aes(x = as.POSIXct("2020-05-29 07:00:00"), y = 300, xend = as.POSIXct("2022-11-12 07:00:00"), yend =300 ),  linewidth = 100, linejoin =  "round") +
+        geom_segment(aes(x = as.POSIXct("2020-05-29 07:00:00"), y = 5, xend = as.POSIXct("2022-11-12 07:00:00"), yend =5 ),  linewidth = 100, linejoin = "round") 
   
-#LBMP trend over time
+
+  
+  
+#Figure 2: LBMP trend over time
 NYSISO_data %>% 
-  filter(year(TimeStamp) > 2020) %>% 
+  filter(year(TimeStamp) > 2020) %>%
   ggplot(aes(x = `TimeStamp`, y = `DAM Zonal LBMP`)) +
   geom_line() +
   stat_smooth(method = "lm", formula = y ~ x, show.legend = TRUE, inherit.aes = TRUE, ) +
-  scale_x_datetime() +
+  scale_x_datetime(breaks = date_breaks("3 months")) +
   theme_classic() +
-  labs(x = "Date (Year)", y = "Day Ahead Hourly LBMP ($/MWH)", title = "Figure 2:" ~underline("NYSISO LBMP Zooming in on last 24 months"), caption = "ISO Market data from: https://www.nyiso.com/custom-reports" )
+  labs(x = "Date (Year)", y = "Day Ahead Hourly LBMP ($/MWH)", title = "Figure 2:" ~underline("NYSISO LBMP Zooming in on last 24 months"), caption = "ISO Market data from: https://www.nyiso.com/custom-reports" ) 
+
 
 
 #    FIGURE 3 - LBMP Monthly Average Costs 
@@ -219,17 +227,17 @@ Figure six shows the annual distribution of LBMP for each year 2009 to present. 
 
 ```{r Building Plots, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
 
-#Figure 7 Yearly averages 
+##Figure 7 Yearly averages 
 NYSISO_data %>% 
   mutate('Year' =as.factor(year(TimeStamp))) %>% 
   ggplot(aes(x = Year, y = `DAM Zonal LBMP`)) +
   geom_boxplot( coef = 1.0) +
   scale_x_discrete() +
-  labs(x = "Year", y = "Annual Average LBMP ($/MWH)", title = "Figure 7:" ~underline("Box and Whisker Average Annual LBMP ($/MWH)") )
+  labs(x = "Year", y = "Annual Average LBMP ($/MWH)", title = "Figure 7:" ~underline("Box and Whisker Average Annual LBMP ($/MWH)") ) -> Fugire7
 
 
 ```
-Figure 7 shows electric consumption (orange plot) and LBMP (black plot) scaled to bring both plots on one graph and both synchronized to the same timestamps. The consumption is from an  electrically cooled, steam heated 1,000,000 gsf office building in midtown Manhattan. The office buildings consumption runs counter to the LBMP. 
+
 
 ```{r Data Production, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
 
@@ -243,6 +251,7 @@ ISOCOMP_data %>%
   labs(x = "TimeStamp", y = "Hourly LBMP ($/MWH) & Comsumption (kWh)", title = "Figure 8:" ~underline("Relationship of Comsumption to LBMP"), caption = "ISO Market data from: https://www.nyiso.com/custom-reports & Aquacore Database")
 
 
+#Figure 9 Comaprision of strategies by month. 
 M_ISOCOMP_data[, -c(3,6,7,8)] %>% 
   gather(key= 'Strategy', value = 'Value', -`month(TimeStamp)`) -> MonthlyComparision
 MonthlyComparision$Strategy <- factor(MonthlyComparision$Strategy)
@@ -253,7 +262,7 @@ MonthlyComparision %>%
   geom_col(aes(fill = Strategy), position = "dodge") +
   theme_classic() +
     scale_fill_discrete(name = "Strategy", labels = c("50 / 50", "Fixed", "Index")) +
-  labs(x = "Month", y = "Monthly Cost($)", title = "Figure 9:" ~underline("Comparision of Strategies by month")) 
+  labs(x = "Month", y = "Monthly Cost($)", title = "Figure 9:" ~underline("Comparision of Strategies by month")) -> Figure9
 ```  
 
 ```{r Annual Summeries, echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
@@ -516,6 +525,8 @@ kable(AnnualCostComparisionsTable, format = 'html',
   kable_styling(bootstrap_options = "striped",
                 full_width = F) %>%
   footnote(c("2023 Electric Supply Options")) 
+
+Figure9
 
 
 ```
