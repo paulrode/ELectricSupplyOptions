@@ -526,7 +526,7 @@ kable(AnnualCostComparisionsTable, format = 'html',
                 full_width = F) %>%
   footnote(c("2023 Electric Supply Options")) 
 
-Figure9
+Figure9    
 
 
 ```
